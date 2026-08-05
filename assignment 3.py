@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.INFO, format="[LOG] %(message)s")
 
 
 def log_transaction(func):
-    @functools.wraps(func)
+    functools.wraps(func)
     def wrapper(self, amount: float, *args, **kwargs):
         logging.info(f"Initiating payment via {self.__class__.__name__}...")
         result = func(self, amount, *args, **kwargs)
@@ -17,7 +17,7 @@ def log_transaction(func):
 
 
 class PaymentStrategy(ABC):
-    @abstractmethod
+    abstractmethod
     def pay(self, amount: float) -> bool:
         pass
 
@@ -40,7 +40,7 @@ class PayPalPayment(PaymentStrategy):
     def __init__(self, email: str):
         self.email = email
 
-    @log_transaction
+    log_transaction
     def pay(self, amount: float) -> bool:
         print(f"Paid ${amount:.2f} using PayPal ({self.email})")
         return True
@@ -50,7 +50,7 @@ class UPIPayment(PaymentStrategy):
     def __init__(self, upi_id: str):
         self.upi_id = upi_id
 
-    @log_transaction
+    log_transaction
     def pay(self, amount: float) -> bool:
         print(f"Paid ${amount:.2f} using UPI ({self.upi_id})")
         return True
@@ -61,7 +61,7 @@ class NetBankingPayment(PaymentStrategy):
         self.bank_name = bank_name
         self.account_no = account_no
 
-    @log_transaction
+    log_transaction
     def pay(self, amount: float) -> bool:
         print(f"Paid ${amount:.2f} using Net Banking ({self.bank_name})")
         return True
@@ -74,12 +74,12 @@ class PaymentProcessor:
     def __init__(self, strategy: PaymentStrategy = None):
         self._strategy = strategy
 
-    @classmethod
+    classmethod
     def register_strategy(cls, name: str, strategy_cls):
         """Classmethod to register strategies into registry."""
         cls._registry[name.lower()] = strategy_cls
 
-    @classmethod
+    classmethod
     def create_strategy(cls, name: str, **kwargs) -> PaymentStrategy:
         """Factory method to instantiate registered strategies."""
         strategy_cls = cls._registry.get(name.lower())
